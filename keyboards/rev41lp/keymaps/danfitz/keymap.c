@@ -22,6 +22,7 @@ enum layer_names {
     _ADJUST
 };
 
+#define BASE   MO(_BASE)
 #define LOWER  MO(_LOWER)
 #define RAISE  MO(_RAISE)
 #define ADJUST MO(_ADJUST)
@@ -35,7 +36,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
 KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   LOWER,  LT(ADJUST, KC_SPC),   RAISE, XXXXXXX \
+                                          KC_LGUI,   LOWER,  LT(_ADJUST, KC_SPC),  RAISE,  XXXXXXX \
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -47,7 +48,7 @@ KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                     
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LCTL, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_COMM,  KC_DOT, KC_SLSH, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   LOWER,  LT(ADJUST, KC_SPC),   RAISE, XXXXXXX \
+                                          KC_LGUI,   LOWER,  LT(_ADJUST, KC_SPC),  RAISE,  XXXXXXX \
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -59,7 +60,7 @@ KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                     
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LCTL, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, KC_LABK, KC_RABK, KC_QUES, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   LOWER,  LT(ADJUST, KC_SPC),   RAISE, XXXXXXX \
+                                          KC_LGUI,   LOWER,  LT(_ADJUST, KC_SPC),  RAISE,  XXXXXXX \
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -71,11 +72,61 @@ KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                     
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LCTL, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   LOWER,  LT(ADJUST, KC_SPC),   RAISE, XXXXXXX \
+                                          KC_LGUI,   LOWER,    KC_SPC,             RAISE,  XXXXXXX \
                                       //`--------------------------'  `--------------------------'
   )
 };
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+// This function allows you to use 2 layers + a 3rd layer accessed via a combo of the first 2 layer keys
+// layer_state_t layer_state_set_user(layer_state_t state) {
+//   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+// }
+
+void persistent_default_layer_set(uint16_t default_layer) {
+  eeconfig_update_default_layer(default_layer);
+  default_layer_set(default_layer);
+}
+
+void update_tri_layer_lp(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
+  if (IS_LAYER_ON(layer1) && IS_LAYER_ON(layer2)) {
+    layer_on(layer3);
+  } else {
+    layer_off(layer3);
+  }
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case BASE:
+      if (record->event.pressed) {
+        persistent_default_layer_set(1UL<<_BASE);
+      }
+      return false;
+    case LOWER:
+      if (record->event.pressed) {
+        layer_on(_LOWER);
+        update_tri_layer_lp(_LOWER, _RAISE, _ADJUST);
+      } else {
+        layer_off(_LOWER);
+        update_tri_layer_lp(_LOWER, _RAISE, _ADJUST);
+      }
+      return false;
+    case RAISE:
+      if (record->event.pressed) {
+        layer_on(_RAISE);
+        update_tri_layer_lp(_LOWER, _RAISE, _ADJUST);
+      } else {
+        layer_off(_RAISE);
+        update_tri_layer_lp(_LOWER, _RAISE, _ADJUST);
+      }
+      return false;
+    case ADJUST:
+        if (record->event.pressed) {
+          layer_on(_ADJUST);
+        } else {
+          layer_off(_ADJUST);
+        }
+        return false;
+  }
+  return true;
 }
