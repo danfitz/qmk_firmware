@@ -66,13 +66,13 @@ KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                     
 
   [_ADJUST] = LAYOUT_rev41lp( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB, XXXXXXX, XXXXXXX, KC_BRMD, KC_BRMU, CG_TOGG,                      KC_HOME, KC_PGUP,   KC_UP, KC_PGDN, XXXXXXX, KC_BSPC,\
+       KC_TAB, XXXXXXX, XXXXXXX, KC_BRMD, KC_BRMU, XXXXXXX,                      KC_HOME, KC_PGUP,   KC_UP, KC_PGDN, XXXXXXX, KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        KC_ESC, XXXXXXX, XXXXXXX,KC__VOLDOWN,KC__VOLUP,KC__MUTE,                   KC_END, KC_LEFT, KC_DOWN,KC_RIGHT, XXXXXXX, XXXXXXX,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT, KC_LCTL, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          KC_LGUI,   LOWER,    KC_SPC,             RAISE,  XXXXXXX \
+                                          KC_LGUI,   LOWER,    KC_SPC,             RAISE,  CG_TOGG \
                                       //`--------------------------'  `--------------------------'
   )
 };
