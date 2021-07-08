@@ -17,9 +17,15 @@
 
 enum layers {
   _QWERTY,
+  _COLEMAK_DH,
   _LOWER,
   _RAISE,
   _ADJUST
+};
+
+enum keycodes {
+  QWERTY = SAFE_RANGE,
+  COLEMAK
 };
 
 #define LOWER MO(_LOWER)
@@ -43,6 +49,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_ESC,    KC_A,    KC_S,    KC_D,   KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
     KC_LSFT,    KC_Z,    KC_X,    KC_C,   KC_V,    KC_B,    KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_ENT,
     _______, KC_LCTL, KC_LALT, KC_LGUI,  LOWER,  KC_SPC,   RAISE, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT
+),
+
+/* Colemak Mod-DH
+ * ,-----------------------------------------------------------------------------------.
+ * | Tab  |   Q  |   W  |   F  |   P  |   B  |   J  |   L  |   U  |   Y  |   ;  | Bksp |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Esc  |   A  |   R  |   S  |   T  |   G  |   M  |   N  |   E  |   I  |   O  |  "   |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * | Shift|   X  |   C  |   D  |   V  |   Z  |   K  |   H  |   ,  |   .  |   /  |Enter |
+ * |------+------+------+------+------+------+------+------+------+------+------+------|
+ * |      | Ctrl | Alt  | GUI  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
+ * `-----------------------------------------------------------------------------------'
+ */
+[_COLEMAK_DH] = LAYOUT_planck_mit(
+    KC_TAB,     KC_Q,    KC_W,    KC_F,  KC_P,    KC_B,    KC_J,    KC_L,    KC_U,    KC_Y, KC_SCLN, KC_BSPC,
+    KC_ESC,     KC_A,    KC_R,    KC_S,  KC_T,    KC_G,    KC_M,    KC_N,    KC_E,    KC_I,    KC_O, KC_QUOT,
+    KC_LSFT,    KC_X,    KC_C,    KC_D,  KC_V,    KC_Z,    KC_K,    KC_H, KC_COMM,  KC_DOT, KC_SLSH,  KC_ENT,
+    _______, KC_LCTL, KC_LALT, KC_LGUI, LOWER,  KC_SPC,   RAISE, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT
 ),
 
 /* Lower
@@ -94,7 +118,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_mit(
-     KC_TAB, RESET,   DEBUG,   _______, _______, RGB_TOG, RGB_MOD,     RGB_HUD,  RGB_HUI, RGB_SAD,  RGB_SAI, KC_BSPC,
+     KC_TAB, RESET,   DEBUG,    QWERTY, COLEMAK, RGB_TOG, RGB_MOD,     RGB_HUD,  RGB_HUI, RGB_SAD,  RGB_SAI, KC_BSPC,
      KC_ESC, _______, _______, _______, _______, _______, _______,     _______,  _______, _______,  _______, _______,
     KC_LSFT, _______, _______, _______, _______, _______, _______,    KC__MUTE,  _______, _______,  _______,  KC_ENT,
     _______, KC_LCTL, KC_LALT, KC_LGUI,   LOWER,  KC_SPC,   RAISE, KC__VOLDOWN,  KC_BRMD, KC_BRMU, KC__VOLUP
@@ -106,3 +130,20 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case QWERTY:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_QWERTY);
+      }
+      return false;
+      break;
+    case COLEMAK:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_COLEMAK_DH);
+      }
+      return false;
+      break;
+  }
+  return true;
+}
