@@ -17,15 +17,17 @@
 
 enum layer_names {
     _BASE,
+    _COLEMAK_DHM,
     _LOWER,
     _RAISE,
     _ADJUST
 };
 
-#define BASE   MO(_BASE)
-#define LOWER  MO(_LOWER)
-#define RAISE  MO(_RAISE)
-#define ADJUST MO(_ADJUST)
+#define BASE    MO(_BASE)
+#define COLEMAK MO(_COLEMAK_DHM)
+#define LOWER   MO(_LOWER)
+#define RAISE   MO(_RAISE)
+#define ADJUST  MO(_ADJUST)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT_rev41lp( \
@@ -35,6 +37,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
        KC_ESC,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
 KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, RSFT_T(KC_ENT),\
+  //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+                                          KC_LGUI,   LOWER,  LT(_ADJUST, KC_SPC),  RAISE,  XXXXXXX \
+                                      //`--------------------------'  `--------------------------'
+  ),
+
+  [_COLEMAK_DHM] = LAYOUT_rev41lp( \
+  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
+       KC_TAB,    KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,                         KC_J,    KC_L,    KC_U,    KC_Y, KC_SCLN, KC_BSPC,\
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+       KC_ESC,    KC_A,    KC_R,    KC_S,    KC_T,    KC_G,                         KC_M,    KC_N,    KC_E,    KC_I,    KC_O, KC_QUOT,\
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_D,    KC_V,                         KC_K,    KC_H, KC_COMM,  KC_DOT, KC_SLSH, RSFT_T(KC_ENT),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI,   LOWER,  LT(_ADJUST, KC_SPC),  RAISE,  XXXXXXX \
                                       //`--------------------------'  `--------------------------'
@@ -66,7 +80,7 @@ KC_LSFT,CTL_T(KC_Z),ALT_T(KC_X),    KC_C,    KC_V,    KC_B,                     
 
   [_ADJUST] = LAYOUT_rev41lp( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB, XXXXXXX, XXXXXXX, KC_BRMD, KC_BRMU, XXXXXXX,                      KC_HOME, KC_PGUP,   KC_UP, KC_PGDN, XXXXXXX, KC_BSPC,\
+       KC_TAB,    BASE, COLEMAK, KC_BRMD, KC_BRMU, XXXXXXX,                      KC_HOME, KC_PGUP,   KC_UP, KC_PGDN, XXXXXXX, KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        KC_ESC, XXXXXXX, XXXXXXX,KC__VOLDOWN,KC__VOLUP,KC__MUTE,                   KC_END, KC_LEFT, KC_DOWN,KC_RIGHT, XXXXXXX, XXXXXXX,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -99,7 +113,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case BASE:
       if (record->event.pressed) {
-        persistent_default_layer_set(1UL<<_BASE);
+        set_single_persistent_default_layer(_BASE);
+      }
+      return false;
+    case COLEMAK:
+      if (record->event.pressed) {
+        set_single_persistent_default_layer(_COLEMAK_DHM);
       }
       return false;
     case LOWER:
